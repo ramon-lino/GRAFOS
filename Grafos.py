@@ -26,132 +26,168 @@ def ent_arestas():
             ares[i] = ares[i].split("(")                # Separando a String que compõe as arestas pelo parenteses anteriormente uniformizado.
             g.adicionaAresta(ares[i][0], ares[i][1])    # Adicionando as Arestas na variavel " g "
             dic_aux[ares[i][0]] = ares[i][1]            # Criando Dicionario de Arestas
-            lista_desafio.append(ares[i][1])
+
         return dic_aux
     except:
         print("Arestas invalidas! Formato não aceito ou não correspondentes aos vertices.")
         print("Digite no formato: 'a1(A-B), a2(C-D), a3(E-F)' - com conexões correspondentes aos vertices.")
 
+def vertices_nao_Adjacentes():
+    aux_n_adjacentes = []
+    for i in range(len(matriz_de_adjc)):
+        for e in range(i, len(matriz_de_adjc)):
+
+            if i != e and matriz_de_adjc[i][e] == 0:
+                aux_n_adjacentes.append(lista_vertices[i] + '-' + lista_vertices[e])
+
+    return aux_n_adjacentes
+
 def VerifyAres(S, DicA = {}):
+    cont = 0
     for i in DicA.keys():
         if DicA[i] == S:
-            return True
-
-    return False
-
-def Nao_Adjacentes(V = [], A = {}):
-    NaoAdjc = []
-    for i in range(len(V)):
-        for e in range(i, len(V)):
-
-            if V[i] != V[e]:
-                StringAres = V[i]
-                StringAres += '-'
-                StringAres += V[e]
-                Verify = VerifyAres(StringAres, A)
-
-                if (Verify == False):
-                    NaoAdjc.append(StringAres)
-
-    return NaoAdjc
-
-def adjc_ele_mesmo(V = [], A = {}):
-    for i in range(len(V)):
-        StringAres = V[i]
-        StringAres += "-"
-        StringAres += V[i]
-
-        Verify = VerifyAres(StringAres, A)
-
-        if Verify == True:
-            return Verify
-
-    return Verify
-
-def Grau_Vertice(v = '', A = {}):
-    cont = 0
-
-    for i in A.keys():
-        if v == A[i][0] or v == A[i][2]:
             cont += 1
 
     return cont
 
-def Insidencia_Arestas(v = '', A = {}):
-    lista_ares_inside = []
+def matriz_adjacencia(V = [], D = {}):
+    matriz = []
+    aux = []
+    for i in range(len(V)):
+        for e in range(len(V)):
+            S = V[i] + '-' + V[e]
+            aux.append(VerifyAres(S, D))
 
-    for i in A.keys():
-        if A[i][0] == v or A[i][2] == v:
-            lista_ares_inside.append(i)
+        matriz.append(aux)
+        aux = []
 
-    return lista_ares_inside
+    return matriz
 
-def Grafo_Completo(A = []):
-    if len(A) == 0:
-        return True
-    else:
-        return False
+def procura_aresta_insidente(v = ''):
+    aux = []
+    for i in dicionario_arestas.keys():
+        if v == dicionario_arestas[i][0] or v == dicionario_arestas[i][2]:
+            aux.append(i)
+    return aux
 
-def imprime_nao_adjc(A= []):
-    if len(A) != 0:
-        print("\nVertices não adjacentes >>>", end=' ')
-        for i in range(len(A)):
-            print(A[i] + ',', end=' ')
-        print('')
-    else:
-        print("Não há vertices não adjacentes")
+def Grafo_Completo():
+    for i in range(len(matriz_de_adjc)):
+        for e in range(len(matriz_de_adjc[i])):
+            if ( (i != e) and (matriz_de_adjc[i][e] == 0 and matriz_de_adjc[e][i] == 0) ):
+                return False
+    return True
 
-def imprime_adjc_ele_mesmo(v):
-    print("Há vertices adjacentes a  ele mesmo? >>>", end=' ')
-    print(v)
+def arestas_paralelas():
+    for i in range(len(matriz_de_adjc)):
+        for e in range(len(matriz_de_adjc[i])):
+            if matriz_de_adjc[i][e] == 2:
+                return True
+            elif matriz_de_adjc[i][e] > 0 and matriz_de_adjc[e][i] > 0:
+                return True
+    return False
 
-def imprime_grau_vertice(v = '', grau = 0):
-    print("Grau do Vertice " + v, end=' >>> ')
-    print(grau)
+def adjc_ele_mesmo2(M):
+    cont = 0
+    for i in range(len(M)):
 
-def imprime_arestas_inside(a = '', A = []):
-    print("Arestas Insidentes no vertice ", a, end=' >>> ')
-    for i in range(len(A)):
-        print(A[i] + ',', end=' ')
+        if (M[i][cont] > 0):
+            return True
+
+        cont += 1;
+
+    return False
+
+def grau_do_vertice(v):
+    cont_grau = 0
+    for i in range(len(lista_vertices)):
+        if lista_vertices[i] == v:
+
+            for e in range(len(matriz_de_adjc[i])):
+                if matriz_de_adjc[i][e] > 0:
+                    cont_grau += matriz_de_adjc[i][e]
+                if matriz_de_adjc[e][i] > 0:
+                    cont_grau += matriz_de_adjc[e][i]
+
+            return cont_grau
+
+    return 0
+
+def imprime():
+    print(g,'\n')
+    print("A) - Vertives não adjacentes >>> ", end=' ')
+    for i in range(len(vert_nao_adjacentes)):
+        if i < len(vert_nao_adjacentes) -1:
+            print(vert_nao_adjacentes[i], end=', ')
+        else:
+            print(vert_nao_adjacentes[i])
+    print("B) - Há vertices adjacentes a ele mesmo? >>> ", adjc_ele_mesmo2(matriz_de_adjc))
+    print("C) - Existem Arestas Paralelas ? >>> ", arestas_paralelas())
+    print("D) - Grau do Vertice " + vert + " >>> ", grau_do_vertice(vert))
+    print("E) - Arestas insidentes no vertice ", vert_inside, ' >>> ', end='')
+    for i in range(len(InsideArestas)):
+        if i < len(InsideArestas) -1:
+            print(InsideArestas[i], end=' - ')
+        else:
+            print(InsideArestas[i],end='')
     print('')
+    print('F) - O Grafo é completo ? >>> ', GrafoCompleto)
+### DESAFIO ###
 
-def imprime_completo(c):
-    print("O Grafo é completo ? >>> ",c)
+def ciclos_grafo(C = '', A = {}):
 
-def grafo_conexo(A = []):
-    aux = A
-    retorno = True
-    for i in lista_desafio:
+    if C.count(C[-1]) == 2:
+        lista_de_ciclos.append(C)
+        return C
+    aux = []
+    for i in A.keys():
+        if A[i][0] == C[-1]:
+            aux.append(A[i][2])
+        if A[i][2] == C[-1]:
+            aux.append(A[i][0])
+    caminho = []
+    for i in range(len(aux)):
+        if C[-2:][0] != aux[i]:
+            caminho.append(C + aux[i])
 
-        del aux[0]
-        for e in aux:
-            if (i[0] == e[0]) or (i[0] == e[2]) or (i[2] == e[0]) or (i[2] == e[2]):
-                retorno = False
+    for i in range(len(caminho)):
+        ciclos_grafo(caminho[i], A)
 
-        if retorno == True:
-            return retorno
-    
-    return retorno
+def imprime_ciclos():
+    for i in range(len(lista_de_ciclos)):
+        if i % 2 == 0:
+            cont = 0
+            while (lista_de_ciclos[i][cont] != lista_de_ciclos[i][-1]):
+                del lista_de_ciclos[i][cont]
+                cont += 1
+
+            for e in range(len(lista_de_ciclos[i])):
+                if e < len(lista_de_ciclos[i]) -1:
+                    print(lista_de_ciclos[i][e], end=' - ')
+                else:
+                    print(lista_de_ciclos[i][e])
+
+
 g = Grafo() # Iniciando a variavel " g ", que representa um Grafo.
 
 vert = 'C'
 vert_inside = 'M'
-lista_desafio = []
 
-vertices = ent_vertices()
-arestas = ent_arestas()
-NaoAdjcentes = Nao_Adjacentes(vertices, arestas)
-AdjcEleMesmo = adjc_ele_mesmo(vertices, arestas)
-GrauVertice = Grau_Vertice(vert, arestas)
-InsideArestas = Insidencia_Arestas(vert_inside, arestas)
-GrafoCompleto = Grafo_Completo(NaoAdjcentes)
 
-print(g)
-imprime_nao_adjc(NaoAdjcentes)
-imprime_adjc_ele_mesmo(AdjcEleMesmo)
-imprime_grau_vertice(vert, GrauVertice)
-imprime_arestas_inside(vert_inside, InsideArestas)
-imprime_completo(GrafoCompleto)
+lista_vertices = ent_vertices()
+dicionario_arestas = ent_arestas()
+matriz_de_adjc = matriz_adjacencia(lista_vertices, dicionario_arestas)
+vert_nao_adjacentes = vertices_nao_Adjacentes()
+InsideArestas = procura_aresta_insidente(vert_inside)
+GrafoCompleto = Grafo_Completo()
+imprime()
 
-print(lista_desafio)
-print(grafo_conexo(lista_desafio))
+### DESAFIO ###
+
+lista_de_ciclos = []
+ciclos_grafo('T', dicionario_arestas)
+print("DESAFIO : Há Ciclos no grafo ? >>>", end=' ')
+if len(lista_de_ciclos) == 0:
+    print(False)
+else:
+    print(True, end=' :> ')
+    imprime_ciclos()
