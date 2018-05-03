@@ -3,7 +3,7 @@ from grafo import Grafo
 ## Função para entrada dos vertices ##
 def ent_vertices():
     try:
-        vert = "J, C, E, P, M, T, Z"
+        vert = input("Digite os Vertices do Grafo >>>  ")
         vert = vert.split(", ")     # Separando a String de entrada em uma lista com cada Vertices como elemento.
 
         for i in vert:
@@ -17,7 +17,7 @@ def ent_vertices():
 def ent_arestas():
     dic_aux = {}
     #print("As arestas devem ser informada no modelo: a1(J-C), a2(C-E), a3(C-E)")
-    ares = "a1(J-C), a2(C-E), a3(C-E), a4(C-P), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)"
+    ares = input("Digite as Arestas do Grafo >>>  ")
     ares = ares.split(", ")         # Separando a String de entrada em uma lista com cada Par de Aresta como elemento,
 
     try:
@@ -82,7 +82,7 @@ def arestas_paralelas():
         for e in range(len(matriz_de_adjc[i])):
             if matriz_de_adjc[i][e] == 2:
                 return True
-            elif matriz_de_adjc[i][e] > 0 and matriz_de_adjc[e][i] > 0:
+            elif matriz_de_adjc[i][e] > 0 and matriz_de_adjc[e][i] > 0 and i != e:
                 return True
     return False
 
@@ -153,10 +153,12 @@ def ciclos_grafo(C = '', A = {}):
         ciclos_grafo(caminho[i], A)
 
 def imprime_ciclos():
+
     for i in range(len(lista_de_ciclos)):
         if i % 2 == 0:
             cont = 0
             while (lista_de_ciclos[i][cont] != lista_de_ciclos[i][-1]):
+
                 del lista_de_ciclos[i][cont]
                 cont += 1
 
@@ -179,15 +181,25 @@ matriz_de_adjc = matriz_adjacencia(lista_vertices, dicionario_arestas)
 vert_nao_adjacentes = vertices_nao_Adjacentes()
 InsideArestas = procura_aresta_insidente(vert_inside)
 GrafoCompleto = Grafo_Completo()
+for i in range(len(matriz_de_adjc)):
+    print(matriz_de_adjc[i])
 imprime()
 
 ### DESAFIO ###
 
 lista_de_ciclos = []
 ciclos_grafo('T', dicionario_arestas)
+print(lista_de_ciclos)
 print("DESAFIO : Há Ciclos no grafo ? >>>", end=' ')
 if len(lista_de_ciclos) == 0:
     print(False)
 else:
     print(True, end=' :> ')
     imprime_ciclos()
+
+
+#   a1(J-C), a2(C-E), a3(C-E), a4(C-P), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)
+#   J, C, E, P, M, T, Z
+
+# a1(J-C), a3(C-E), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)
+# a1(J-C), a3(C-E), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z), A10(J-J)
