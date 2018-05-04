@@ -115,6 +115,8 @@ def grau_do_vertice(v):
 def imprime():
     print(g,'\n')
     print("A) - Vertives não adjacentes >>> ", end=' ')
+    if len(vert_nao_adjacentes) == 0:
+        print("Todos os vertices são adjacentes!")
     for i in range(len(vert_nao_adjacentes)):
         if i < len(vert_nao_adjacentes) -1:
             print(vert_nao_adjacentes[i], end=', ')
@@ -139,35 +141,54 @@ def ciclos_grafo(C = '', A = {}):
         lista_de_ciclos.append(C)
         return C
     aux = []
+
     for i in A.keys():
         if A[i][0] == C[-1]:
             aux.append(A[i][2])
         if A[i][2] == C[-1]:
             aux.append(A[i][0])
     caminho = []
+
     for i in range(len(aux)):
-        if C[-2:][0] != aux[i]:
+        if len(C) == 1:
+            indice = -1
+        else:
+            indice = -2
+
+        if C[indice] != aux[i]:
             caminho.append(C + aux[i])
 
     for i in range(len(caminho)):
         ciclos_grafo(caminho[i], A)
 
-def imprime_ciclos():
+def modela_caminho_ciclos():
+    lista_aux = []
 
     for i in range(len(lista_de_ciclos)):
-        if i % 2 == 0:
-            cont = 0
-            while (lista_de_ciclos[i][cont] != lista_de_ciclos[i][-1]):
+        aux = ''
+        dentro_do_laco = False
 
-                del lista_de_ciclos[i][cont]
-                cont += 1
+        for e in lista_de_ciclos[i]:
+            if e == lista_de_ciclos[i][-1]:
+                dentro_do_laco = True
 
-            for e in range(len(lista_de_ciclos[i])):
-                if e < len(lista_de_ciclos[i]) -1:
-                    print(lista_de_ciclos[i][e], end=' - ')
+            if dentro_do_laco == True:
+                aux += e
+
+        if aux not in lista_aux:
+            lista_aux.append(aux)
+
+    return lista_aux
+
+def imprime_ciclos():
+
+    for i in range(len(lista_ciclos_final)):
+        if len(lista_ciclos_final[i]) == 2 or i % 2 == 0:
+            for e in range(len(lista_ciclos_final[i])):
+                if e < len(lista_ciclos_final[i]) -1:
+                    print(lista_ciclos_final[i][e], end=' - ')
                 else:
-                    print(lista_de_ciclos[i][e])
-
+                    print(lista_ciclos_final[i][e],end=' / ')
 
 g = Grafo() # Iniciando a variavel " g ", que representa um Grafo.
 
@@ -181,15 +202,14 @@ matriz_de_adjc = matriz_adjacencia(lista_vertices, dicionario_arestas)
 vert_nao_adjacentes = vertices_nao_Adjacentes()
 InsideArestas = procura_aresta_insidente(vert_inside)
 GrafoCompleto = Grafo_Completo()
-for i in range(len(matriz_de_adjc)):
-    print(matriz_de_adjc[i])
 imprime()
 
 ### DESAFIO ###
 
 lista_de_ciclos = []
 ciclos_grafo('T', dicionario_arestas)
-print(lista_de_ciclos)
+lista_ciclos_final = modela_caminho_ciclos()
+
 print("DESAFIO : Há Ciclos no grafo ? >>>", end=' ')
 if len(lista_de_ciclos) == 0:
     print(False)
@@ -197,9 +217,11 @@ else:
     print(True, end=' :> ')
     imprime_ciclos()
 
-
 #   a1(J-C), a2(C-E), a3(C-E), a4(C-P), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)
 #   J, C, E, P, M, T, Z
 
 # a1(J-C), a3(C-E), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)
 # a1(J-C), a3(C-E), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z), A10(J-J)
+
+## Grafo Completo, sem laços :
+# a1(J-C), a2(C-E), a3(C-E), a4(C-P), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z), a10(J-E), a11(J-P), a12(J-M), a13(J-T), a14(J-Z), a15(C-Z), a16(E-P), a17(E-M), a18(E-T), a19(E-Z), a20(P-M), a21(P-T), a22(P-Z), a23(M-Z)
