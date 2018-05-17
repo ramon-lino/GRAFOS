@@ -1,9 +1,11 @@
 from grafo import Grafo
+from copy import copy
 
 ## Função para entrada dos vertices ##
 def ent_vertices():
     try:
-        vert = input("Digite os Vertices do Grafo >>>  ")
+        #vert = input("Digite os Vertices do Grafo >>>  ")
+        vert = "A, B, C, D, E, F, G, H, I"
         vert = vert.split(", ")     # Separando a String de entrada em uma lista com cada Vertices como elemento.
 
         for i in vert:
@@ -13,11 +15,12 @@ def ent_vertices():
     except:
         print("Vertices invalidos! Formato não aceito.")
         print("Digite no formato: 'A, B, C, D'")
-
 def ent_arestas():
     dic_aux = {}
     #print("As arestas devem ser informada no modelo: a1(J-C), a2(C-E), a3(C-E)")
-    ares = input("Digite as Arestas do Grafo >>>  ")
+    #ares = input("Digite as Arestas do Grafo >>>  ")
+    #ares = "a1(J-C), a2(C-E), a3(C-E), a4(C-P), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)"
+    ares = "a1(A-B), a2(B-C), a3(C-D), a4(D-E), a5(E-F), a6(F-G), a7(G-H), a8(H-E), a9(B-I), a10(I-B), a11(A-C)"
     ares = ares.split(", ")         # Separando a String de entrada em uma lista com cada Par de Aresta como elemento,
 
     try:
@@ -31,7 +34,6 @@ def ent_arestas():
     except:
         print("Arestas invalidas! Formato não aceito ou não correspondentes aos vertices.")
         print("Digite no formato: 'a1(A-B), a2(C-D), a3(E-F)' - com conexões correspondentes aos vertices.")
-
 def vertices_nao_Adjacentes():
     aux_n_adjacentes = []
     for i in range(len(matriz_de_adjc)):
@@ -41,7 +43,6 @@ def vertices_nao_Adjacentes():
                 aux_n_adjacentes.append(lista_vertices[i] + '-' + lista_vertices[e])
 
     return aux_n_adjacentes
-
 def VerifyAres(S, DicA = {}):
     cont = 0
     for i in DicA.keys():
@@ -49,7 +50,6 @@ def VerifyAres(S, DicA = {}):
             cont += 1
 
     return cont
-
 def matriz_adjacencia(V = [], D = {}):
     matriz = []
     aux = []
@@ -62,21 +62,18 @@ def matriz_adjacencia(V = [], D = {}):
         aux = []
 
     return matriz
-
 def procura_aresta_insidente(v = ''):
     aux = []
     for i in dicionario_arestas.keys():
         if v == dicionario_arestas[i][0] or v == dicionario_arestas[i][2]:
             aux.append(i)
     return aux
-
 def Grafo_Completo():
     for i in range(len(matriz_de_adjc)):
         for e in range(len(matriz_de_adjc[i])):
             if (i != e) and (matriz_de_adjc[i][e] == 0 and matriz_de_adjc[e][i] == 0):
                 return False
     return True
-
 def arestas_paralelas():
     for i in range(len(matriz_de_adjc)):
         for e in range(len(matriz_de_adjc[i])):
@@ -85,7 +82,6 @@ def arestas_paralelas():
             elif matriz_de_adjc[i][e] > 0 and matriz_de_adjc[e][i] > 0 and i != e:
                 return True
     return False
-
 def adjc_ele_mesmo2(M):
     cont = 0
     for i in range(len(M)):
@@ -96,7 +92,6 @@ def adjc_ele_mesmo2(M):
         cont += 1;
 
     return False
-
 def grau_do_vertice(v):
     cont_grau = 0
     for i in range(len(lista_vertices)):
@@ -111,9 +106,8 @@ def grau_do_vertice(v):
             return cont_grau
 
     return 0
-
 def imprime():
-    print(g,'\n')
+    #print(g,'\n')
     print("A) - Vertives não adjacentes >>> ", end=' ')
     if len(vert_nao_adjacentes) == 0:
         print("Todos os vertices são adjacentes!")
@@ -161,7 +155,6 @@ def ciclos_grafo(C = '', A = {}):
 
     for i in range(len(caminho)):
         ciclos_grafo(caminho[i], A)
-
 def modela_caminho_ciclos():
     lista_aux = []
 
@@ -180,7 +173,6 @@ def modela_caminho_ciclos():
             lista_aux.append(aux)
 
     return lista_aux
-
 def imprime_ciclos():
 
     for i in range(len(lista_ciclos_final)):
@@ -190,6 +182,78 @@ def imprime_ciclos():
                     print(lista_ciclos_final[i][e], end=' - ')
                 else:
                     print(lista_ciclos_final[i][e],end=' / ')
+
+### Algoritmo Warshall e Euller ####
+
+def matriz_nao_direcionada_warshall():
+    matriz = matriz_de_adjc.copy()
+
+    for i in range(len(matriz_de_adjc)):
+        for j in range(len(matriz_de_adjc)):
+            if matriz[i][j] != 0:
+                matriz[j][i] = 1
+
+    return matriz
+def algoritmo_warshall():
+    for i in range(len(matriz_warshall)):
+        for j in range(len(matriz_warshall)):
+            if matriz_warshall[j][i] == 1:
+
+                for k in range(len(matriz_warshall)):
+                    matriz_warshall[j][k] = max(matriz_warshall[j][k], matriz_warshall[i][k])
+
+def caminho_eulleriano(C = '', A = {}):
+    verifica_passou = False
+    quantidade_passou = 0
+    verifica_falta = False
+
+    if len(C) > 1:
+        for i in A.keys():
+            if (A[i][0] == C[-2] and A[i][2] == C[-1]) or (A[i][2] == C[-2] and A[i][0] == C[-1]):
+                if dicionario_euller[i] == False:
+                    dicionario_euller[i] = True
+                    quantidade_passou += 1
+                    break
+                else:
+                    verifica_passou = True
+                    quantidade_passou += 1
+
+            if dicionario_euller[i] == False:
+                verifica_falta = True
+
+        if (verifica_passou == True) and quantidade_passou == 1:
+            return 0
+        if verifica_falta == False:
+            caminho_euller = C
+            return 0
+
+    for i in A.keys():
+        if A[i][0] == C[-1]:
+            caminho_eulleriano(C+A[i][2], A)
+
+        if A[i][2] == C[-1]:
+            caminho_eulleriano(C + A[i][0], A)
+
+def algoritmo_eulleriano():
+    vert_impar = []
+    total = 0
+    i = 0
+
+    while ( (total <= 2) and (i < len(matriz_de_adjc)) ):
+        grau = 0
+        for j in range(len(matriz_de_adjc)):
+            grau += matriz_de_adjc[i][j] + matriz_de_adjc[j][i]
+        if grau % 2 != 0:
+            total += 1
+            vert_impar.append(lista_vertices[i])
+        i += 1
+
+    if total > 2:
+        print("Não existe caminho Eulleriano!")
+    else:
+        print("Existe caminho Eulleriano!")
+        caminho_eulleriano(vert_impar[1], dicionario_arestas)
+
 
 g = Grafo() # Iniciando a variavel " g ", que representa um Grafo.
 
@@ -206,10 +270,11 @@ GrafoCompleto = Grafo_Completo()
 
 imprime()
 
+
 ### DESAFIO ###
 
 lista_de_ciclos = []
-ciclos_grafo('T', dicionario_arestas)
+ciclos_grafo('A', dicionario_arestas)
 lista_ciclos_final = modela_caminho_ciclos()
 
 print("DESAFIO : Há Ciclos no grafo ? >>>", end=' ')
@@ -218,7 +283,30 @@ if len(lista_de_ciclos) == 0:
 else:
     print(True, end=' :> ')
     imprime_ciclos()
-print('\n\n')
+print('\n')
+
+matriz_warshall = matriz_nao_direcionada_warshall()
+algoritmo_warshall()
+
+### Print algoritmo de Warshall ###
+
+for i in range(len(matriz_warshall)):
+    print(matriz_warshall[i])
+
+### RESETANDO MATRIZ DE ADJACENCIA PARA FORMA ORIGINAL!! ###
+matriz_de_adjc = matriz_adjacencia(lista_vertices, dicionario_arestas)
+
+caminho_euller = ''
+dicionario_euller = {}
+for i in dicionario_arestas.keys():
+    dicionario_euller[i] = False
+
+algoritmo_eulleriano()
+
+
+
+
+
 
 
 #   a1(J-C), a2(C-E), a3(C-E), a4(C-P), a5(C-P), a6(C-M), a7(C-T), a8(M-T), a9(T-Z)
